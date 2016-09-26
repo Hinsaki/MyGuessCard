@@ -39,12 +39,13 @@ public class MainActivity extends Activity implements OnClickListener {
             R.id.card8, R.id.card9, R.id.card10, R.id.card11};
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         hadledelay = new HandleDelay();
         reset = (Button) findViewById(R.id.reset);
         reset.setOnClickListener(this);
+
         setImageView();
         addInitListener();
         setInitImageViewId();
@@ -85,7 +86,7 @@ public class MainActivity extends Activity implements OnClickListener {
     public void setRotationBeforeAnimation(ImageView select, int id) {
         float centerX = select.getWidth() / 2f;
         float centerY = select.getHeight() / 2f;
-        // 構建三維旋轉動畫對象，旋轉角度為0到90度，這使得ListView控件將會從可見變為不可見
+        // 構建旋轉動畫，旋轉角度為0到90度，使ListView從可見變為不可見
         final Rotate3dAnimation rotation = new Rotate3dAnimation(0, 92,
                 centerX, centerY, 360, true);
         // 動畫持續時間300毫秒
@@ -101,7 +102,7 @@ public class MainActivity extends Activity implements OnClickListener {
     public void setRotationAfterAnimation(ImageView select) {
         float centerX = select.getWidth() / 2f;
         float centerY = select.getHeight() / 2f;
-        // 構建三維旋轉動畫對象，旋轉角度為0到90度，這使得ListView控件將會從可見變為不可見
+        // 建立旋轉動畫，旋轉角度為0到90度，使ListView從可見變為不可見
         final Rotate3dAnimation rotation = new Rotate3dAnimation(360, 270,
                 centerX, centerY, 360, true);
         // 動畫持續時間500毫秒
@@ -159,11 +160,11 @@ public class MainActivity extends Activity implements OnClickListener {
         }
 
         /**
-         * 當ListView控件的動畫完成後，還需要再啟動的ImageView的動畫，讓ImageView的從不可見變為可見
+         * 當ListView的動畫完成後，再啟動的ImageView的動畫，讓ImageView的從不可見變為可見
          */
         @Override
         public void onAnimationEnd(Animation animation) {
-            // 獲取布局的中心點位置，作为旋轉的中心點
+            // 獲取布局的中心點位置，作旋轉的中心點
             float centerX = imageview.getWidth() / 2f;
             float centerY = imageview.getHeight() / 2f;
             //
