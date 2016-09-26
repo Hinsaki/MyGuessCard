@@ -26,17 +26,16 @@ public class MainActivity extends Activity implements OnClickListener {
     int cmp = 0;
     ImageView[] card = new ImageView[12];
     ImageView cardA = null, cardB = null;
-    private static int picId[] = {
+    private int setImageId[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    private int picId[] = {
             R.drawable.picture1, R.drawable.picture1,
             R.drawable.picture2, R.drawable.picture2,
             R.drawable.picture3, R.drawable.picture3,
             R.drawable.picture4, R.drawable.picture4,
             R.drawable.picture5, R.drawable.picture5,
             R.drawable.picture6, R.drawable.picture6};
-    private static int setImageId[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-    private static int setImageViewUi[] = {R.id.card0, R.id.card1, R.id.card2,
-            R.id.card3, R.id.card4, R.id.card5, R.id.card6, R.id.card7,
-            R.id.card8, R.id.card9, R.id.card10, R.id.card11};
+    private int setImageViewUi[] = {R.id.card0, R.id.card1, R.id.card2, R.id.card3, R.id.card4,
+            R.id.card5, R.id.card6, R.id.card7, R.id.card8, R.id.card9, R.id.card10, R.id.card11};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +46,7 @@ public class MainActivity extends Activity implements OnClickListener {
         reset.setOnClickListener(this);
 
         setImageView();
-        addInitListener();
+        initListener();
         setInitImageViewId();
         Random();
     }
@@ -55,25 +54,25 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onClick(View v) {
         if (v == reset) {
             for (int i = 0; i < 12; i++) {
-                card[i].setImageDrawable(getResources().getDrawable(
-                        R.drawable.pic1));
+                card[i].setImageDrawable(getResources().getDrawable(R.drawable.pic1));
             }
             cmp = 0;
             arraylist.clear();
             Random();
-            addInitListener();
+            initListener();
             setInitImageViewId();
             return;
         }
         for (int i = 0; i < 12; i++) {
             if (v == card[i]) {
-                setRotationBeforeAnimation(card[i], arraylist.get(i));
+                setBeforeAnimation(card[i], arraylist.get(i));
             }
         }
         if (cardA == null) {
             cardA = (ImageView) v;
             removeListener(cardA, 0);
             reset.setEnabled(false);
+            //移除剛剛A的值並且鎖住reset按鈕
         } else if (cardB == null) {
             cardB = (ImageView) v;
             removeListener(cardB, 2);
@@ -83,10 +82,9 @@ public class MainActivity extends Activity implements OnClickListener {
         }
     }
 
-    public void setRotationBeforeAnimation(ImageView select, int id) {
+    public void setBeforeAnimation(ImageView select, int id) {
         float centerX = select.getWidth() / 2f;
         float centerY = select.getHeight() / 2f;
-        // 構建旋轉動畫，旋轉角度為0到90度，使ListView從可見變為不可見
         final Rotate3dAnimation rotation = new Rotate3dAnimation(0, 92,
                 centerX, centerY, 360, true);
         // 動畫持續時間300毫秒
@@ -99,10 +97,9 @@ public class MainActivity extends Activity implements OnClickListener {
         select.startAnimation(rotation);
     }
 
-    public void setRotationAfterAnimation(ImageView select) {
+    public void setAfterAnimation(ImageView select) {
         float centerX = select.getWidth() / 2f;
         float centerY = select.getHeight() / 2f;
-        // 建立旋轉動畫，旋轉角度為0到90度，使ListView從可見變為不可見
         final Rotate3dAnimation rotation = new Rotate3dAnimation(360, 270,
                 centerX, centerY, 360, true);
         // 動畫持續時間500毫秒
@@ -111,7 +108,7 @@ public class MainActivity extends Activity implements OnClickListener {
         rotation.setFillAfter(true);
         rotation.setInterpolator(new AccelerateInterpolator());
         // 設置動畫的監聽器
-        rotation.setAnimationListener(new TurnToImageViewAfter(select));
+        rotation.setAnimationListener(new TurnImageViewAfter(select));
         select.startAnimation(rotation);
     }
 
@@ -131,7 +128,6 @@ public class MainActivity extends Activity implements OnClickListener {
         public void onAnimationEnd(Animation animation) {
             float centerX = imageview.getWidth() / 2f;
             float centerY = imageview.getHeight() / 2f;
-            // 建立翻牌動作，角度從270度轉至300度
             final Rotate3dAnimation rotation = new Rotate3dAnimation(270, 360,
                     centerX, centerY, 360, false);
             // 持續時間500毫秒
@@ -139,8 +135,7 @@ public class MainActivity extends Activity implements OnClickListener {
             // 動畫完成後保持完成的狀態
             rotation.setFillAfter(true);
             rotation.setInterpolator(new AccelerateInterpolator());
-            imageview.setImageDrawable(getResources().getDrawable(
-                    picId[imageId]));
+            imageview.setImageDrawable(getResources().getDrawable(picId[imageId]));
             imageview.startAnimation(rotation);
         }
 
@@ -149,10 +144,10 @@ public class MainActivity extends Activity implements OnClickListener {
         }
     }
 
-    class TurnToImageViewAfter implements AnimationListener {
+    class TurnImageViewAfter implements AnimationListener {
         ImageView imageview;
 
-        public TurnToImageViewAfter(ImageView imageview) {
+        public TurnImageViewAfter(ImageView imageview) {
             this.imageview = imageview;
         }
 
@@ -164,7 +159,7 @@ public class MainActivity extends Activity implements OnClickListener {
          */
         @Override
         public void onAnimationEnd(Animation animation) {
-            // 獲取布局的中心點位置，作旋轉的中心點
+            // 獲取中心點位置，以便作旋轉
             float centerX = imageview.getWidth() / 2f;
             float centerY = imageview.getHeight() / 2f;
             //
@@ -175,8 +170,7 @@ public class MainActivity extends Activity implements OnClickListener {
             // 動畫完成後保持完成的狀態
             rotation.setFillAfter(true);
             rotation.setInterpolator(new AccelerateInterpolator());
-            imageview.setImageDrawable(getResources().getDrawable(
-                    R.drawable.pic1));
+            imageview.setImageDrawable(getResources().getDrawable(R.drawable.pic1));
             imageview.startAnimation(rotation);
         }
 
@@ -206,7 +200,7 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         } else if (selected == 1) {
             for (int i = 0; i < 12; i++) {
-                if (!(card[i].getId() == 999)) {
+                if (!(card[i].getId() == 1114)) {
                     card[i].setOnClickListener(null);
                 }
             }
@@ -217,7 +211,7 @@ public class MainActivity extends Activity implements OnClickListener {
         }
     }
 
-    public void addInitListener() {
+    public void initListener() {
         for (int i = 0; i < 12; i++) {
             card[i].setOnClickListener(this);
         }
@@ -225,7 +219,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
     public void addListener() {
         for (int i = 0; i < 12; i++) {
-            if (!(card[i].getId() == 999)) {
+            if (!(card[i].getId() == 1114)) {
                 card[i].setOnClickListener(this);
             }
         }
@@ -239,16 +233,17 @@ public class MainActivity extends Activity implements OnClickListener {
             cmp++;
             for (int i = 0; i < 12; i++) {
                 if (ivA.getId() == i || ivB.getId() == i) {
-                    card[i].setId(999);//
+                    card[i].setId(1114);
                     removeListener(card[i], 1);
                 }
             }
         } else {
-            setRotationAfterAnimation(ivA);
-            setRotationAfterAnimation(ivB);
+            setAfterAnimation(ivA);
+            setAfterAnimation(ivB);
         }
+        //當配對成功6組，則顯示過關
         if (cmp == 6) {
-            Toast.makeText(this, "破關，您的記憶力真不是蓋的!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "恭喜破關!可按重新開始!", Toast.LENGTH_LONG).show();
         }
         cardA = null;
         cardB = null;
@@ -285,7 +280,6 @@ public class MainActivity extends Activity implements OnClickListener {
             int c = msg.what;
             if (c == 3) {
                 Compare(cardA, cardB);
-                c = 0;
                 reset.setEnabled(true);
                 addListener();
             }
